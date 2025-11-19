@@ -28,6 +28,15 @@ class _WorkshopScreenState extends State<WorkshopScreen> {
       setState(() {
         _dataManager.addWorkout(result);
       });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Workout saved: ${result.name}'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
     }
   }
 

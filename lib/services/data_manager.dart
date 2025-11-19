@@ -4,7 +4,9 @@ import '../models/workout.dart';
 class DataManager {
   static final DataManager _instance = DataManager._internal();
   factory DataManager() => _instance;
-  DataManager._internal();
+  DataManager._internal() {
+    _initializeDemoWorkout();
+  }
 
   final List<Exercise> _exercises = [
     Exercise(
@@ -69,6 +71,35 @@ class DataManager {
 
   List<Exercise> get exercises => List.unmodifiable(_exercises);
   List<Workout> get workouts => List.unmodifiable(_workouts);
+
+  void _initializeDemoWorkout() {
+    final demoWorkout = Workout(
+      id: 'demo_1',
+      name: 'Beginner Strength Program',
+      exercises: [
+        WorkoutExercise(
+          exercise: _exercises[2],
+          sets: 3,
+          targetReps: 10,
+          weight: 20.0,
+        ),
+        WorkoutExercise(
+          exercise: _exercises[1],
+          sets: 3,
+          targetReps: 12,
+          weight: 0.0,
+        ),
+        WorkoutExercise(
+          exercise: _exercises[0],
+          sets: 3,
+          targetReps: 8,
+          weight: 0.0,
+        ),
+      ],
+      createdAt: DateTime.now(),
+    );
+    _workouts.add(demoWorkout);
+  }
 
   void addExercise(Exercise exercise) {
     _exercises.add(exercise);

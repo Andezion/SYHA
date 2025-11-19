@@ -185,15 +185,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
         createdAt: widget.existingWorkout?.createdAt ?? DateTime.now(),
       );
 
-      // TODO: Save to database
       Navigator.of(context).pop(workout);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Workout saved: ${workout.name}'),
-          backgroundColor: AppColors.success,
-        ),
-      );
     } else if (_workoutExercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

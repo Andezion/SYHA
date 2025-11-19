@@ -190,6 +190,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   _buildWorkoutCard(),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _showWorkoutSelectionDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.textOnPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.play_arrow),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppStrings.startWorkout,
+                            style: AppTextStyles.button,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     'Statistics',
@@ -222,13 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showWorkoutSelectionDialog,
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
-        icon: const Icon(Icons.play_arrow),
-        label: const Text(AppStrings.startWorkout),
       ),
     );
   }
