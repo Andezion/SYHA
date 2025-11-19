@@ -39,11 +39,12 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
     super.dispose();
   }
 
-  void _addExercise() {
+  void _addExercise() async {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ExerciseLibraryScreen(
           onExerciseSelected: (exercise) {
+            Navigator.of(context).pop(); // Close library screen
             _showExerciseConfigDialog(exercise);
           },
         ),
@@ -153,6 +154,20 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
                           });
 
                           Navigator.of(context).pop();
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  existing != null
+                                      ? 'Exercise updated: ${exercise.name}'
+                                      : 'Exercise added: ${exercise.name}',
+                                ),
+                                backgroundColor: AppColors.success,
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

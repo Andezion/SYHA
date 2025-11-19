@@ -149,6 +149,11 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
   }
 
   void _completeSet(int actualReps) {
+    if (_currentExerciseResult!.setResults
+        .any((s) => s.setNumber == _currentSetNumber)) {
+      return;
+    }
+
     setState(() {
       _isSetInProgress = false;
 
