@@ -19,10 +19,14 @@ class CreateWorkoutScreen extends StatefulWidget {
   State<CreateWorkoutScreen> createState() => _CreateWorkoutScreenState();
 }
 
-class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
+class _CreateWorkoutScreenState extends State<CreateWorkoutScreen>
+    with AutomaticKeepAliveClientMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   List<WorkoutExercise> _workoutExercises = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -40,23 +44,27 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
   }
 
   void _addExercise() async {
+    print('🔵 [CREATE_WORKOUT] Opening exercise library...');
     final selectedExercise = await Navigator.of(context).push<Exercise>(
       MaterialPageRoute(
         builder: (context) => ExerciseLibraryScreen(
           onExerciseSelected: (exercise) {
+            print('🔵 [CREATE_WORKOUT] Exercise selected: ${exercise.name}');
             Navigator.of(context).pop(exercise);
           },
         ),
       ),
     );
 
+    print(
+        '🔵 [CREATE_WORKOUT] Returned from library. Selected: ${selectedExercise?.name ?? "null"}, mounted: $mounted');
     if (selectedExercise != null && mounted) {
       _showExerciseConfigDialog(selectedExercise);
     }
   }
 
   void _showExerciseConfigDialog(Exercise exercise,
-      [WorkoutExercise? existing]) {
+      [WorkoutExercise? existing]) async {
     final setsController = TextEditingController(
       text: existing?.sets.toString() ?? '3',
     );
@@ -67,9 +75,9 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
       text: existing?.weight.toString() ?? '0',
     );
 
-    showDialog(
+    final result = await showDialog<WorkoutExercise>(
       context: context,
-      builder: (context) => Dialog(
+      builder: (dialogContext) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -126,7 +134,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(dialogContext).pop(),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -140,38 +148,20 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
+                          print('🟢 [CREATE_WORKOUT] Save button pressed');
                           final workoutExercise = WorkoutExercise(
                             exercise: exercise,
                             sets: int.parse(setsController.text),
                             targetReps: int.parse(repsController.text),
                             weight: double.parse(weightController.text),
                           );
+                          print(
+                              '🟢 [CREATE_WORKOUT] Created WorkoutExercise: ${exercise.name}, sets: ${workoutExercise.sets}');
 
-                          Navigator.of(context).pop();
+                          print(
+                              '🟢 [CREATE_WORKOUT] Returning workout exercise and closing dialog...');
 
-                          if (mounted) {
-                            setState(() {
-                              if (existing != null) {
-                                final index =
-                                    _workoutExercises.indexOf(existing);
-                                _workoutExercises[index] = workoutExercise;
-                              } else {
-                                _workoutExercises.add(workoutExercise);
-                              }
-                            });
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  existing != null
-                                      ? 'Exercise updated: ${exercise.name}'
-                                      : 'Exercise added: ${exercise.name}',
-                                ),
-                                backgroundColor: AppColors.success,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          }
+                          Navigator.of(dialogContext).pop(workoutExercise);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -192,6 +182,37 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
         ),
       ),
     );
+
+    print(
+        '🟢 [CREATE_WORKOUT] Dialog closed. Result: ${result != null ? result.exercise.name : "null"}, Mounted: $mounted');
+
+    if (result != null && mounted) {
+      print('🟢 [CREATE_WORKOUT] Processing result...');
+      setState(() {
+        if (existing != null) {
+          final index = _workoutExercises.indexOf(existing);
+          _workoutExercises[index] = result;
+          print('🟢 [CREATE_WORKOUT] Updated exercise at index $index');
+        } else {
+          _workoutExercises.add(result);
+          print(
+              '🟢 [CREATE_WORKOUT] Added new exercise. Total exercises: ${_workoutExercises.length}');
+        }
+      });
+
+      print('🟢 [CREATE_WORKOUT] Showing SnackBar...');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            existing != null
+                ? 'Exercise updated: ${result.exercise.name}'
+                : 'Exercise added: ${result.exercise.name}',
+          ),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _saveWorkout() {
@@ -217,6 +238,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

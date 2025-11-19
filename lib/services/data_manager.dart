@@ -118,7 +118,12 @@ class DataManager {
   }
 
   void addWorkout(Workout workout) {
+    print(
+        '📦 [DATA_MANAGER] Adding workout: ${workout.name} (ID: ${workout.id})');
+    print(
+        '📦 [DATA_MANAGER] Workout has ${workout.exercises.length} exercises');
     _workouts.add(workout);
+    print('📦 [DATA_MANAGER] Total workouts now: ${_workouts.length}');
   }
 
   void updateWorkout(int index, Workout workout) {

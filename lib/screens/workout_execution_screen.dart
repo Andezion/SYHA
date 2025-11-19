@@ -149,8 +149,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
   }
 
   void _completeSet(int actualReps) {
+    print('⏱️ [WORKOUT_EXEC] Completing set $_currentSetNumber');
     if (_currentExerciseResult!.setResults
         .any((s) => s.setNumber == _currentSetNumber)) {
+      print('⚠️ [WORKOUT_EXEC] Set already completed, ignoring duplicate');
       return;
     }
 
@@ -166,23 +168,30 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
       );
 
       _currentExerciseResult!.setResults.add(setResult);
+      print(
+          '⏱️ [WORKOUT_EXEC] Set completed. Total sets done: ${_currentExerciseResult!.setResults.length}/${_currentExerciseResult!.targetSets}');
 
       if (_currentSetNumber >= _currentExerciseResult!.targetSets) {
-        _showExerciseDifficultyDialog();
+        print(
+            '⏱️ [WORKOUT_EXEC] All sets completed for exercise. Showing difficulty dialog...');
+
+        Future.microtask(() => _showExerciseDifficultyDialog());
       } else {
         _currentSetNumber++;
         _setDurationSeconds = 0;
+        print('⏱️ [WORKOUT_EXEC] Moving to set $_currentSetNumber');
       }
     });
   }
 
   void _showExerciseDifficultyDialog() {
+    print('🟠 [WORKOUT_EXEC] Showing exercise difficulty dialog...');
     ExerciseDifficulty? selectedDifficulty;
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => StatefulBuilder(
+      builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -246,7 +255,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
                 ElevatedButton(
                   onPressed: selectedDifficulty != null
                       ? () {
+                          print(
+                              '✅ [WORKOUT_EXEC] Difficulty selected: $selectedDifficulty. Closing dialog...');
                           Navigator.of(context).pop();
+                          print('✅ [WORKOUT_EXEC] Difficulty dialog closed.');
                           _completeExercise(selectedDifficulty!);
                         }
                       : null,
@@ -300,16 +312,26 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
   }
 
   void _completeExercise(ExerciseDifficulty perceivedDifficulty) {
+    print(
+        '✅ [WORKOUT_EXEC] Completing exercise: ${_currentExerciseResult!.exercise.name}');
+    print('✅ [WORKOUT_EXEC] Perceived difficulty: $perceivedDifficulty');
+    print(
+        '✅ [WORKOUT_EXEC] Current exercise index: $_currentExerciseIndex, Total exercises: ${widget.workout.exercises.length}');
+
     setState(() {
       _currentExerciseResult = _currentExerciseResult!.copyWith(
         perceivedDifficulty: perceivedDifficulty,
       );
       _exerciseResults.add(_currentExerciseResult!);
+      print(
+          '✅ [WORKOUT_EXEC] Exercise result saved. Total completed: ${_exerciseResults.length}');
 
       if (_currentExerciseIndex < widget.workout.exercises.length - 1) {
         _currentExerciseIndex++;
         _currentSetNumber = 1;
         _setDurationSeconds = 0;
+        print(
+            '✅ [WORKOUT_EXEC] Moving to next exercise (index $_currentExerciseIndex): ${widget.workout.exercises[_currentExerciseIndex].exercise.name}');
 
         _currentExerciseResult = ExerciseResult(
           exercise: widget.workout.exercises[_currentExerciseIndex].exercise,
@@ -319,7 +341,10 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
           targetWeight: widget.workout.exercises[_currentExerciseIndex].weight,
           setResults: [],
         );
+        print(
+            '✅ [WORKOUT_EXEC] Next exercise initialized: ${_currentExerciseResult!.exercise.name}');
       } else {
+        print('✅ [WORKOUT_EXEC] No more exercises. Finishing workout...');
         _finishWorkout();
       }
     });
