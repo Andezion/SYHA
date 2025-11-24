@@ -6,6 +6,8 @@ import '../constants/app_strings.dart';
 import '../models/exercise.dart';
 import '../models/workout.dart';
 import '../models/workout_session.dart';
+import '../models/workout_history.dart';
+import '../services/data_manager.dart';
 
 class WorkoutExecutionScreen extends StatefulWidget {
   final Workout workout;
@@ -360,7 +362,13 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
       totalDurationSeconds: _totalDurationSeconds,
     );
 
-    // TODO: Save session to database
+    final history = WorkoutHistory(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      date: DateTime.now(),
+      session: completedSession,
+    );
+    DataManager().addWorkoutHistory(history);
+    print('📅 [WORKOUT_EXEC] Workout history saved for ${history.dateOnly}');
 
     showDialog(
       context: context,

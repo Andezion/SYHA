@@ -4,7 +4,9 @@ import '../constants/app_text_styles.dart';
 import '../constants/app_strings.dart';
 import '../services/data_manager.dart';
 import '../models/workout.dart';
+import '../widgets/compact_calendar.dart';
 import 'workout_execution_screen.dart';
+import 'full_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -136,45 +138,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.surface,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left),
-                      onPressed: () {
-                        setState(() {
-                          _selectedDate = DateTime(
-                            _selectedDate.year,
-                            _selectedDate.month - 1,
-                          );
-                        });
-                      },
-                    ),
-                    Text(
-                      _getMonthYearString(_selectedDate),
-                      style: AppTextStyles.h4,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: () {
-                        setState(() {
-                          _selectedDate = DateTime(
-                            _selectedDate.year,
-                            _selectedDate.month + 1,
-                          );
-                        });
-                      },
-                    ),
-                  ],
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FullCalendarScreen(),
                 ),
-                const SizedBox(height: 16),
-                _buildCalendarGrid(),
-              ],
+              );
+            },
+            child: CompactCalendar(
+              focusedDay: _selectedDate,
+              onDaySelected: (selectedDay) {
+                setState(() {
+                  _selectedDate = selectedDay;
+                });
+              },
             ),
           ),
           const SizedBox(height: 16),
@@ -247,54 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getMonthYearString(DateTime date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return '${months[date.month - 1]} ${date.year}';
-  }
-
-  Widget _buildCalendarGrid() {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                .map((day) => SizedBox(
-                      width: 40,
-                      child: Text(
-                        day,
-                        style: AppTextStyles.caption.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Calendar (to be implemented)',
-            style: AppTextStyles.caption,
           ),
         ],
       ),

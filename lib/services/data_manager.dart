@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/exercise.dart';
 import '../models/workout.dart';
+import '../models/workout_history.dart';
 
 class DataManager {
   static final DataManager _instance = DataManager._internal();
@@ -12,6 +13,7 @@ class DataManager {
   SharedPreferences? _prefs;
   List<Exercise> _exercises = [];
   List<Workout> _workouts = [];
+  List<WorkoutHistory> _workoutHistory = [];
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -48,6 +50,12 @@ class DataManager {
           .toList();
       print('📦 [DATA_MANAGER] Loaded ${_workouts.length} workouts');
     }
+
+    final historyJson = _prefs?.getStringList('workout_history') ?? [];
+    _workoutHistory = historyJson
+        .map((json) => WorkoutHistory.fromJson(jsonDecode(json)))
+        .toList();
+    print('📦 [DATA_MANAGER] Loaded ${_workoutHistory.length} history entries');
   }
 
   Future<void> _saveData() async {
@@ -60,11 +68,16 @@ class DataManager {
     final workoutsJson = _workouts.map((w) => jsonEncode(w.toJson())).toList();
     await _prefs?.setStringList('workouts', workoutsJson);
 
+    final historyJson =
+        _workoutHistory.map((h) => jsonEncode(h.toJson())).toList();
+    await _prefs?.setStringList('workout_history', historyJson);
+
     print('📦 [DATA_MANAGER] Data saved successfully');
   }
 
   List<Exercise> get exercises => List.unmodifiable(_exercises);
   List<Workout> get workouts => List.unmodifiable(_workouts);
+  List<WorkoutHistory> get workoutHistory => List.unmodifiable(_workoutHistory);
 
   void _loadDefaultExercises() {
     _exercises = [
@@ -212,5 +225,33 @@ class DataManager {
       return _workouts[0];
     }
     return null;
+  }
+
+  void addWorkoutHistory(WorkoutHistory history) {
+    print('📦 [DATA_MANAGER] Adding workout history for ${history.date}');
+    _workoutHistory.add(history);
+    _saveData();
+  }
+
+  List<WorkoutHistory> getWorkoutHistoryForDate(DateTime date) {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    return _workoutHistory.where((h) => h.dateOnly == dateOnly).toList();
+  }
+
+  Map<DateTime, List<WorkoutHistory>> getWorkoutHistoryMap() {
+    final Map<DateTime, List<WorkoutHistory>> map = {};
+    for (var history in _workoutHistory) {
+      final dateKey = history.dateOnly;
+      if (!map.containsKey(dateKey)) {
+        map[dateKey] = [];
+      }
+      map[dateKey]!.add(history);
+    }
+    return map;
+  }
+
+  bool hasWorkoutOnDate(DateTime date) {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    return _workoutHistory.any((h) => h.dateOnly == dateOnly);
   }
 }
