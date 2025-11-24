@@ -44,20 +44,22 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen>
   }
 
   void _addExercise() async {
-    print('🔵 [CREATE_WORKOUT] Opening exercise library...');
-    final selectedExercise = await Navigator.of(context).push<Exercise>(
-      MaterialPageRoute(
-        builder: (context) => ExerciseLibraryScreen(
+    print('🔵 [CREATE_WORKOUT] Opening exercise library as dialog...');
+
+    final selectedExercise = await showDialog<Exercise>(
+      context: context,
+      builder: (dialogContext) => Dialog.fullscreen(
+        child: ExerciseLibraryScreen(
           onExerciseSelected: (exercise) {
             print('🔵 [CREATE_WORKOUT] Exercise selected: ${exercise.name}');
-            Navigator.of(context).pop(exercise);
+            Navigator.of(dialogContext).pop(exercise);
           },
         ),
       ),
     );
 
     print(
-        '🔵 [CREATE_WORKOUT] Returned from library. Selected: ${selectedExercise?.name ?? "null"}, mounted: $mounted');
+        '🔵 [CREATE_WORKOUT] Returned from library dialog. Selected: ${selectedExercise?.name ?? "null"}, mounted: $mounted');
     if (selectedExercise != null && mounted) {
       _showExerciseConfigDialog(selectedExercise);
     }
