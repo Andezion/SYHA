@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'constants/app_colors.dart';
 import 'constants/app_strings.dart';
 import 'screens/login_screen.dart';
+import 'services/data_manager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await DataManager().initialize();
+
   runApp(const MyApp());
 }
 

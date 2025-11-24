@@ -1,76 +1,131 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/exercise.dart';
 import '../models/workout.dart';
 
 class DataManager {
   static final DataManager _instance = DataManager._internal();
   factory DataManager() => _instance;
-  DataManager._internal() {
-    _initializeDemoWorkout();
+
+  DataManager._internal();
+
+  SharedPreferences? _prefs;
+  List<Exercise> _exercises = [];
+  List<Workout> _workouts = [];
+  bool _isInitialized = false;
+
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    print('📦 [DATA_MANAGER] Initializing...');
+    _prefs = await SharedPreferences.getInstance();
+    await _loadData();
+    _isInitialized = true;
+    print('📦 [DATA_MANAGER] Initialization complete');
   }
 
-  final List<Exercise> _exercises = [
-    Exercise(
-      id: '1',
-      name: 'Pull-ups',
-      description: 'Upper body exercise focusing on back and biceps',
-      difficulty: ExerciseDifficulty.medium,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '2',
-      name: 'Push-ups',
-      description: 'Bodyweight exercise for chest, shoulders and triceps',
-      difficulty: ExerciseDifficulty.easy,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '3',
-      name: 'Squats',
-      description: 'Lower body compound exercise',
-      difficulty: ExerciseDifficulty.medium,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '4',
-      name: 'Bench Press',
-      description: 'Chest and triceps compound exercise',
-      difficulty: ExerciseDifficulty.hard,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '5',
-      name: 'Deadlift',
-      description: 'Full body compound exercise',
-      difficulty: ExerciseDifficulty.hard,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '6',
-      name: 'Overhead Press',
-      description: 'Shoulder compound exercise',
-      difficulty: ExerciseDifficulty.medium,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '7',
-      name: 'Barbell Row',
-      description: 'Back compound exercise',
-      difficulty: ExerciseDifficulty.medium,
-      createdAt: DateTime.now(),
-    ),
-    Exercise(
-      id: '8',
-      name: 'Dips',
-      description: 'Chest and triceps bodyweight exercise',
-      difficulty: ExerciseDifficulty.hard,
-      createdAt: DateTime.now(),
-    ),
-  ];
+  Future<void> _loadData() async {
+    print('📦 [DATA_MANAGER] Loading data from storage...');
 
-  final List<Workout> _workouts = [];
+    final exercisesJson = _prefs?.getStringList('exercises') ?? [];
+    if (exercisesJson.isEmpty) {
+      print('📦 [DATA_MANAGER] No saved exercises, loading defaults...');
+      _loadDefaultExercises();
+    } else {
+      _exercises = exercisesJson
+          .map((json) => Exercise.fromJson(jsonDecode(json)))
+          .toList();
+      print('📦 [DATA_MANAGER] Loaded ${_exercises.length} exercises');
+    }
+
+    final workoutsJson = _prefs?.getStringList('workouts') ?? [];
+    if (workoutsJson.isEmpty) {
+      print('📦 [DATA_MANAGER] No saved workouts, creating demo...');
+      _initializeDemoWorkout();
+    } else {
+      _workouts = workoutsJson
+          .map((json) => Workout.fromJson(jsonDecode(json)))
+          .toList();
+      print('📦 [DATA_MANAGER] Loaded ${_workouts.length} workouts');
+    }
+  }
+
+  Future<void> _saveData() async {
+    print('📦 [DATA_MANAGER] Saving data to storage...');
+
+    final exercisesJson =
+        _exercises.map((e) => jsonEncode(e.toJson())).toList();
+    await _prefs?.setStringList('exercises', exercisesJson);
+
+    final workoutsJson = _workouts.map((w) => jsonEncode(w.toJson())).toList();
+    await _prefs?.setStringList('workouts', workoutsJson);
+
+    print('📦 [DATA_MANAGER] Data saved successfully');
+  }
 
   List<Exercise> get exercises => List.unmodifiable(_exercises);
   List<Workout> get workouts => List.unmodifiable(_workouts);
+
+  void _loadDefaultExercises() {
+    _exercises = [
+      Exercise(
+        id: '1',
+        name: 'Pull-ups',
+        description: 'Upper body exercise focusing on back and biceps',
+        difficulty: ExerciseDifficulty.medium,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '2',
+        name: 'Push-ups',
+        description: 'Bodyweight exercise for chest, shoulders and triceps',
+        difficulty: ExerciseDifficulty.easy,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '3',
+        name: 'Squats',
+        description: 'Lower body compound exercise',
+        difficulty: ExerciseDifficulty.medium,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '4',
+        name: 'Bench Press',
+        description: 'Chest and triceps compound exercise',
+        difficulty: ExerciseDifficulty.hard,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '5',
+        name: 'Deadlift',
+        description: 'Full body compound exercise',
+        difficulty: ExerciseDifficulty.hard,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '6',
+        name: 'Overhead Press',
+        description: 'Shoulder compound exercise',
+        difficulty: ExerciseDifficulty.medium,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '7',
+        name: 'Barbell Row',
+        description: 'Back compound exercise',
+        difficulty: ExerciseDifficulty.medium,
+        createdAt: DateTime.now(),
+      ),
+      Exercise(
+        id: '8',
+        name: 'Dips',
+        description: 'Chest and triceps bodyweight exercise',
+        difficulty: ExerciseDifficulty.hard,
+        createdAt: DateTime.now(),
+      ),
+    ];
+  }
 
   void _initializeDemoWorkout() {
     final demoWorkout = Workout(
@@ -103,10 +158,13 @@ class DataManager {
 
   void addExercise(Exercise exercise) {
     _exercises.add(exercise);
+    _saveData();
+    print('📦 [DATA_MANAGER] Exercise added: ${exercise.name}');
   }
 
   void removeExercise(String id) {
     _exercises.removeWhere((exercise) => exercise.id == id);
+    _saveData();
   }
 
   Exercise? getExerciseById(String id) {
@@ -123,18 +181,21 @@ class DataManager {
     print(
         '📦 [DATA_MANAGER] Workout has ${workout.exercises.length} exercises');
     _workouts.add(workout);
+    _saveData();
     print('📦 [DATA_MANAGER] Total workouts now: ${_workouts.length}');
   }
 
   void updateWorkout(int index, Workout workout) {
     if (index >= 0 && index < _workouts.length) {
       _workouts[index] = workout;
+      _saveData();
     }
   }
 
   void removeWorkout(int index) {
     if (index >= 0 && index < _workouts.length) {
       _workouts.removeAt(index);
+      _saveData();
     }
   }
 
