@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.fitness_center,
                     color: AppColors.primary,
                   ),

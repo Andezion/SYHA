@@ -3,6 +3,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import '../constants/app_strings.dart';
 import 'login_screen.dart';
+import 'customization_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -114,6 +115,18 @@ class ProfileScreen extends StatelessWidget {
                     Icons.favorite,
                     () {
                       // TODO: Navigate to wellness tracking
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Кастомизация',
+                    Icons.color_lens,
+                    () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const CustomizationScreen(),
+                        ),
+                      );
                     },
                   ),
                   _buildMenuItem(

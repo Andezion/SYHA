@@ -486,8 +486,7 @@ class _WorkoutExecutionScreenState extends State<WorkoutExecutionScreen> {
             LinearProgressIndicator(
               value: progress,
               backgroundColor: AppColors.divider,
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               minHeight: 6,
             ),
             Container(

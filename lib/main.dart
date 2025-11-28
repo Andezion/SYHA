@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'constants/app_colors.dart';
 import 'constants/app_strings.dart';
 import 'screens/login_screen.dart';
 import 'services/data_manager.dart';
+import 'services/theme_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await DataManager().initialize();
 
-  runApp(const MyApp());
+  final appColor = AppColor();
+  await appColor.load();
+
+  runApp(
+    ChangeNotifierProvider.value(
+      value: appColor,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,18 +27,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColor = Provider.of<AppColor>(context);
+
     return MaterialApp(
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          primary: AppColors.primary,
+          seedColor: appColor.color,
+          primary: appColor.color,
         ),
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.background,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
+        appBarTheme: AppBarTheme(
+          backgroundColor: appColor.color,
           foregroundColor: AppColors.textOnPrimary,
           elevation: 0,
         ),

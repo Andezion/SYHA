@@ -161,7 +161,7 @@ class _WorkshopScreenState extends State<WorkshopScreen> {
                         color: AppColors.primary.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.add,
                         size: 48,
                         color: AppColors.primary,
@@ -225,8 +225,7 @@ class _WorkshopScreenState extends State<WorkshopScreen> {
             color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.fitness_center,
-              color: AppColors.primary, size: 28),
+          child: Icon(Icons.fitness_center, color: AppColors.primary, size: 28),
         ),
         title: Text(
           workout.name,
