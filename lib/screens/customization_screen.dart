@@ -23,7 +23,7 @@ class CustomizationScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Кастомизация', style: AppTextStyles.h4),
+        title: Text('Customization', style: AppTextStyles.h4),
         backgroundColor: appColor.color,
       ),
       body: Padding(
@@ -31,7 +31,7 @@ class CustomizationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Выберите основной цвет приложения', style: AppTextStyles.h3),
+            Text('Pick main color!', style: AppTextStyles.h3),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
@@ -41,7 +41,7 @@ class CustomizationScreen extends StatelessWidget {
                   .toList(),
             ),
             const SizedBox(height: 24),
-            Text('Текущий цвет', style: AppTextStyles.body1),
+            Text('Current color', style: AppTextStyles.body1),
             const SizedBox(height: 8),
             Container(
               width: 64,
