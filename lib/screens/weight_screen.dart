@@ -64,7 +64,7 @@ class _WeightScreenState extends State<WeightScreen> {
                     itemBuilder: (context, index) {
                       final kg = _minKg + index;
                       return Center(
-                          child: Text('$kg кг', style: AppTextStyles.body1));
+                          child: Text('$kg kg', style: AppTextStyles.body1));
                     },
                   ),
                 ),
@@ -80,7 +80,7 @@ class _WeightScreenState extends State<WeightScreen> {
                     itemBuilder: (context, index) {
                       final g = _gramsList[index];
                       return Center(
-                          child: Text('$g г', style: AppTextStyles.body1));
+                          child: Text('$g g', style: AppTextStyles.body1));
                     },
                   ),
                 ),
