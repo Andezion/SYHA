@@ -36,7 +36,7 @@ class CustomizationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Профиль', style: AppTextStyles.h3),
+            Text('Profile', style: AppTextStyles.h3),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -77,7 +77,7 @@ class CustomizationScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Изображение профиля', style: AppTextStyles.body1),
+                      Text('Profile Image', style: AppTextStyles.body1),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: () async {
@@ -92,7 +92,7 @@ class CustomizationScreen extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: appColor.color),
-                        child: const Text('Выбрать фото'),
+                        child: const Text('Choose Photo'),
                       ),
                       const SizedBox(height: 8),
                       TextButton(
@@ -101,7 +101,7 @@ class CustomizationScreen extends StatelessWidget {
                               listen: false);
                           await profile.setImagePath(null);
                         },
-                        child: const Text('Удалить фото'),
+                        child: const Text('Delete Photo'),
                       ),
                     ],
                   ),
@@ -109,7 +109,7 @@ class CustomizationScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Text('Рамка профиля', style: AppTextStyles.h3),
+            Text('Profile Frame', style: AppTextStyles.h3),
             const SizedBox(height: 12),
             SizedBox(
               height: 88,
@@ -142,7 +142,7 @@ class CustomizationScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Выберите основной цвет приложения', style: AppTextStyles.h3),
+            Text('Choose the primary app color', style: AppTextStyles.h3),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
